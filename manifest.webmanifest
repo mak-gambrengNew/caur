@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "DompetKu",
-  "short_name": "DompetKu",
-  "description": "DompetKu — aplikasi pembayaran dengan tampilan layar penuh.",
+  "name": "Gopay",
+  "short_name": "Gopay",
+  "description": "Gopay — aplikasi pembayaran dengan tampilan layar penuh.",
   "lang": "id-ID",
   "dir": "ltr",
   "start_url": "./",

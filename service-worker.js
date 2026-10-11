@@ -1,4 +1,4 @@
-const CACHE_NAME = "dompetku-pwa-v1";
+const CACHE_NAME = "gopay-pwa-v1";
 const APP_SHELL = [
   "./",
   "./index.html",

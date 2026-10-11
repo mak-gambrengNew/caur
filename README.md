@@ -1,4 +1,4 @@
-# DompetKu PWA
+# Gopay PWA
 
 Repo ini membungkus UI `index.html` yang diberikan menjadi Progressive Web App (PWA) yang dapat diinstal dari browser yang mendukung.
 
