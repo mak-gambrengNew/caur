@@ -42,3 +42,10 @@ Setelah deploy:
 ## Manifest PWA
 
 `manifest.webmanifest` berisi identitas aplikasi, URL awal dan cakupan, mode standalone, orientasi portrait, warna tema/latar, kategori, serta ikon biasa dan maskable. Pastikan URL `start_url`, `scope`, dan jalur ikon tetap sesuai jika aplikasi diterbitkan di subfolder, bukan di root domain.
+
+## Perubahan perbaikan (v2)
+
+- `index.html` diratakan: app tidak lagi dibungkus iframe `srcdoc` + bingkai HP (2,26 MB → ±0,59 MB).
+- Alur transfer dipindah ke `transfer.html` (dimuat saat dibuka), GIF sukses bayar ke `assets/pay-success.gif` (diambil di latar belakang).
+- Service worker `gopay-pwa-v2` dan `vercel.json` (header SW/manifest) ditambahkan.
+- Vercel Authentication (Deployment Protection) harus mati agar bisa dibuka di perangkat lain.

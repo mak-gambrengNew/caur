@@ -1,4 +1,4 @@
-const CACHE_NAME = "gopay-pwa-v1";
+const CACHE_NAME = "gopay-pwa-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,7 +6,8 @@ const APP_SHELL = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
-  "./favicon.png"
+  "./favicon.png",
+  "./transfer.html"
 ];
 
 self.addEventListener("install", (event) => {
