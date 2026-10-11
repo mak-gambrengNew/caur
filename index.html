@@ -1189,6 +1189,82 @@ try{var c=JSON.parse(localStorage.getItem(CK)||'null');if(c&amp;&amp;c.balance!=
 renderBal();renderList();updateChips();sync();
 })();
 </script>
+<script id=&quot;dk-tf-test&quot;>
+/* DompetKu - alur UJI &quot;Cek nama penerima&quot; di menu Transfer.
+   Hanya menampilkan nama dari API pihak ketiga (belum terverifikasi). Tidak ada transfer uang. */
+(function(){
+'use strict';
+var FN_URL='https://eslpewjqlwbhacgurexo.supabase.co/functions/v1/lookup-account';
+var KEY='sb_publishable_cxi_CaIAVbob0hnxbY6EAw_u8DdbvF7';
+var BANKS=[['bca','BCA'],['bri','BRI'],['bni','BNI'],['mandiri','Mandiri'],['bsi','BSI'],['seabank','SeaBank']];
+var ERR={
+ rate_limited:'Terlalu sering mengecek. Tunggu satu menit lalu coba lagi.',
+ unsupported_bank:'Bank ini belum didukung.',
+ invalid_account_number:'Nomor tidak valid (hanya angka, 5-20 digit).',
+ not_found_or_upstream_error:'Rekening tidak ditemukan atau layanan sumber menolak permintaan.',
+ no_name_in_response:'Layanan membalas, tetapi tidak mengembalikan nama pemilik untuk rekening ini.',
+ upstream_timeout:'Layanan sumber terlalu lama merespons.',
+ upstream_unreachable:'Layanan sumber tidak dapat dijangkau.',
+ unauthorized:'Permintaan ditolak server.',
+ bad_request:'Permintaan tidak valid.'
+};
+function $(id){return document.getElementById(id)}
+function esc(v){return String(v==null?'':v).replace(/[&amp;<>&quot;']/g,function(c){return '&amp;#'+c.charCodeAt(0)+';'})}
+function btn(){return document.querySelector('#modalback .modalactions .btn:not(.secondary)')}
+function setLabel(t){var b=btn();if(!b)return;if(!b.getAttribute('data-o'))b.setAttribute('data-o',b.textContent);b.textContent=t}
+function box(kind,html){
+ var c=kind==='ok'?'rgba(46,204,113,.14);border:1px solid rgba(46,204,113,.5)':kind==='err'?'rgba(231,76,60,.14);border:1px solid rgba(231,76,60,.5)':'rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.35)';
+ $('tfRes').innerHTML='<div style=&quot;background:'+c+';border-radius:12px;padding:10px 12px;margin-top:12px&quot;>'+html+'</div>';
+}
+function dbg(r,ms){
+ var p=[];if(r&amp;&amp;r.upstream_status!=null)p.push('HTTP sumber '+r.upstream_status);
+ p.push(ms+' ms');
+ if(r&amp;&amp;r.shape&amp;&amp;r.shape.data)p.push('field data: '+r.shape.data.join(', '));
+ return '<div class=&quot;small muted&quot; style=&quot;margin-top:6px&quot;>Uji API: '+esc(p.join(' \u00b7 '))+'</div>';
+}
+var _oa=window.openAction;
+window.openAction=function(a){
+ _oa.apply(this,arguments);
+ if(a!=='Transfer gratis')return;
+ setLabel('Cek nama');
+ var opts=BANKS.map(function(b){return '<option value=&quot;'+b[0]+'&quot;>'+b[1]+'</option>'}).join('');
+ $('modalBody').innerHTML=
+  '<p class=&quot;muted small&quot;>Uji cek nama penerima otomatis. Nama berasal dari layanan pihak ketiga dan belum terverifikasi.</p>'
+ +'<label>Bank / e-wallet</label><select id=&quot;tfBank&quot;>'+opts+'</select>'
+ +'<label>Nomor rekening</label>'
+ +'<input id=&quot;tfAcc&quot; type=&quot;text&quot; inputmode=&quot;numeric&quot; autocomplete=&quot;off&quot; placeholder=&quot;Contoh: 1234567890&quot;>'
+ +'<div id=&quot;tfRes&quot; aria-live=&quot;polite&quot;></div>';
+};
+function doCheck(){
+ var bank=$('tfBank').value;
+ var acc=($('tfAcc').value||'').replace(/[\s-]/g,'');
+ if(!/^\d{5,20}$/.test(acc)){box('err',esc(ERR.invalid_account_number));return}
+ var b=btn();if(b){if(b.disabled)return;b.disabled=true}
+ box('info','Memeriksa\u2026');
+ var ctl=new AbortController(),t0=performance.now(),to=setTimeout(function(){ctl.abort()},30000);
+ fetch(FN_URL,{method:'POST',headers:{'apikey':KEY,'Content-Type':'application/json'},body:JSON.stringify({bank:bank,account_number:acc}),signal:ctl.signal})
+ .then(function(r){return r.json().catch(function(){return null}).then(function(j){return{http:r.status,j:j}})})
+ .then(function(o){
+   var ms=Math.round(performance.now()-t0),j=o.j||{};
+   if(j.ok&amp;&amp;j.name){
+     box('ok','<div class=&quot;small muted&quot;>Nama penerima (disamarkan oleh layanan)</div><div style=&quot;font-weight:700;font-size:1.05em;margin-top:2px&quot;>'+esc(j.name)+'</div>'
+       +'<div class=&quot;small muted&quot; style=&quot;margin-top:6px&quot;>Cocokkan dengan nama yang diberikan penerima sebelum mengirim uang.</div>'+dbg(j,ms));
+   }else{
+     box('err',esc(ERR[j.error]||('Gagal (HTTP '+o.http+')'))+dbg(j,ms));
+   }
+ })
+ .catch(function(e){
+   box('err',esc(e&amp;&amp;e.name==='AbortError'?'Waktu habis. Coba lagi.':'Tidak bisa terhubung ke server. Coba lagi.'));
+ })
+ .then(function(){clearTimeout(to);if(b)b.disabled=false});
+}
+var _sm=window.submitModal;
+window.submitModal=function(){
+ if(typeof currentAction!=='undefined'&amp;&amp;currentAction==='Transfer gratis')return doCheck();
+ return _sm.apply(this,arguments);
+};
+})();
+</script>
 </body></html>"></iframe>
  <div class="home"></div>
 </div></div></div>
